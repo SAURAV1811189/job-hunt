@@ -1,9 +1,14 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
+
+
 export const register = async (req, res) => {
   try {
     const { fullname, email, password, phoneNumber, role } = req.body;
+    // console.log(fullname, email, password, phoneNumber, role);
+    
     // Check if all required fields are filled or not
     if (!fullname || !email || !password || !phoneNumber || !role) {
       return res.status(400).json({
@@ -44,6 +49,8 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password, role } = req.body;
+    console.log(email, password, role);
+
     // Check if all required fields are filled or not
     if (!email || !password || !role) {
       return res.status(400).json({

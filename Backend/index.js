@@ -22,15 +22,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 
-const PORT = process.env.PORT  ;
+const PORT = process.env.PORT;
 
 // here all apis will come
-app.use('/api/v1/user', userRoutes); // Use user routes for user-related APIs
-// "http://localhost:8000/api/v1/user/register" 
-// "http://localhost:8000/api/v1/user/login"
-// "http://localhost:8000/api/v1/user/profile/update"
-app.use('/api/v1/company', companyRoutes); // Use company routes for company-related APIs
-app.use('/api/v1/job', jobRoutes); // Use job routes for job-related APIs
+app.use('/api/v1/user', userRoutes); 
+app.use('/api/v1/company', companyRoutes); 
+app.use('/api/v1/job', jobRoutes); 
 
 app.listen(PORT, () => {
     connectToDb(); // Connect to the database when the server starts

@@ -12,4 +12,4 @@ const connectToDb = async () => {
 
 export default connectToDb;
 // Usage example:
-// import connectToMongo from './db.js';
+// import connectToMongo from './db.js';2
