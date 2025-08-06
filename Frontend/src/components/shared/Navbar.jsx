@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const Navbar = () => {
   const user = false; //user nhi hai
   return (
-    <div className="bg-white flex w-full justify-between items-center p-4 shadow-md ">
+    <div className="flex items-center justify-between mx-auto max-w-7xl h-16  ">
       <div className="m-2">
         <h1 className="font-bold text-2xl text-black">
           Job<span className="font-bold text-red-600">Portal</span>
@@ -16,9 +16,9 @@ const Navbar = () => {
       </div>
       <div className="flex items-center gap-5">
         <ul className="flex space-x-6">
-          <li className="font-semibold text-gray-800">Home</li>
-          <li className="font-semibold text-gray-800">Jobs</li>
-          <li className="font-semibold text-gray-800">Browse</li>
+          <li className="font-semibold text-gray-800"> <Link to="/">Home</Link></li>
+          <li className="font-semibold text-gray-800"><Link to="/jobs">Jobs</Link></li>
+          <li className="font-semibold text-gray-800"><Link to="/browse">Browse</Link></li>
         </ul>
 
         {!user ? (

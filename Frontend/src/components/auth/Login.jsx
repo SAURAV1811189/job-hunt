@@ -8,6 +8,11 @@ import { useState } from "react";
 import { USER_API_END_POINT } from "../../utils/constant";
 import axios from "axios";
 import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "../../redux/authSlice.js"; // Importing setLoading action
+import store from "@/redux/store";
+import { Loader2 } from "lucide-react";
+
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -15,7 +20,12 @@ const Login = () => {
     password: "",
     role: ""
   });
+  const {loading}=useSelector((store=>store.auth));
   const navigate = useNavigate();
+   const dispatch = useDispatch();
+   
+
+
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -24,6 +34,9 @@ const Login = () => {
     e.preventDefault();
     
     try {
+         
+      dispatch(setLoading(true));
+
         const res = await axios.post(`${USER_API_END_POINT}/login`, input , {
             headers: {
                 "Content-Type": "application/json"
@@ -38,6 +51,8 @@ const Login = () => {
     } catch (error) {
         console.error("Error during signup:", error);
          toast.error(error.response.data.message)
+    } finally{
+      dispatch(setLoading(false));
     }
  }
 
@@ -85,10 +100,14 @@ const Login = () => {
                 <Label htmlFor="r2">Recruiter</Label>
               </div>
             </RadioGroup>
-          </div>
-          <Button type="submit" className="w-full my-4">
+          </div>{
+            loading ? <Button className="w-full my-4"> <Loader2  className="mr-2 h-4 animate-spin" / >
+        please wait
+            </Button> :  <Button type="submit" className="w-full my-4">
             Log In
           </Button>
+          }
+         
           <span className="flex items-center justify-center">
             Don't have an account?{" "}
             <Link to="/signup" className="text-blue-500">
