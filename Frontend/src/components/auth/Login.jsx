@@ -9,52 +9,49 @@ import { USER_API_END_POINT } from "../../utils/constant";
 import axios from "axios";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "../../redux/authSlice.js"; // Importing setLoading action
+import { setLoading, setUser } from "../../redux/authSlice.js"; // Importing setLoading action
 import store from "@/redux/store";
 import { Loader2 } from "lucide-react";
-
 
 const Login = () => {
   const [input, setInput] = useState({
     email: "",
     password: "",
-    role: ""
+    role: "",
   });
-  const {loading}=useSelector((store=>store.auth));
+  const { loading } = useSelector((store) => store.auth);
   const navigate = useNavigate();
-   const dispatch = useDispatch();
-   
-
+  const dispatch = useDispatch();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
-  
+
   const submitHandler = async (e) => {
     e.preventDefault();
-    
+
     try {
-         
       dispatch(setLoading(true));
 
-        const res = await axios.post(`${USER_API_END_POINT}/login`, input , {
-            headers: {
-                "Content-Type": "application/json"
-            },
-            withCredentials: true,
-        });
-        // console.log(res.data.success);
-        if(res.data.success) {
-             navigate("/");
-            toast.success(res.data.message);
-        } 
+      const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      // console.log(res.data.success);
+      if (res.data.success) {
+        dispatch(setUser(res.data.user));
+        navigate("/");
+        toast.success(res.data.message);
+      }
     } catch (error) {
-        console.error("Error during signup:", error);
-         toast.error(error.response.data.message)
-    } finally{
+      console.error("Error during signup:", error);
+      toast.error(error.response.data.message);
+    } finally {
       dispatch(setLoading(false));
     }
- }
+  };
 
   return (
     <div>
@@ -68,11 +65,23 @@ const Login = () => {
 
           <div className="my-2">
             <Label>Email</Label>
-            <Input type="email" value={input.email} name="email" onChange={changeEventHandler} placeholder="Enter your email" />
+            <Input
+              type="email"
+              value={input.email}
+              name="email"
+              onChange={changeEventHandler}
+              placeholder="Enter your email"
+            />
           </div>
           <div className="my-2">
             <Label>Password</Label>
-            <Input type="password" value={input.password} name="password" onChange={changeEventHandler} placeholder="Enter your password" />
+            <Input
+              type="password"
+              value={input.password}
+              name="password"
+              onChange={changeEventHandler}
+              placeholder="Enter your password"
+            />
           </div>
 
           <div className="flex items-center justify-between ">
@@ -82,8 +91,8 @@ const Login = () => {
                   type="radio"
                   name="role"
                   value="student"
-                    checked={input.role === "student"}
-                    onChange={changeEventHandler}
+                  checked={input.role === "student"}
+                  onChange={changeEventHandler}
                   className="cursor-pointer"
                 />
                 <Label htmlFor="r1">Student</Label>
@@ -100,14 +109,19 @@ const Login = () => {
                 <Label htmlFor="r2">Recruiter</Label>
               </div>
             </RadioGroup>
-          </div>{
-            loading ? <Button className="w-full my-4"> <Loader2  className="mr-2 h-4 animate-spin" / >
-        please wait
-            </Button> :  <Button type="submit" className="w-full my-4">
-            Log In
-          </Button>
-          }
-         
+          </div>
+          {loading ? (
+            <Button className="w-full my-4">
+              {" "}
+              <Loader2 className="mr-2 h-4 animate-spin" />
+              please wait
+            </Button>
+          ) : (
+            <Button type="submit" className="w-full my-4">
+              Log In
+            </Button>
+          )}
+
           <span className="flex items-center justify-center">
             Don't have an account?{" "}
             <Link to="/signup" className="text-blue-500">

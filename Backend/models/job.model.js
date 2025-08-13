@@ -47,6 +47,12 @@ const jobSchema = new mongoose.Schema({
     ref: "User",
     required: true, // The user who created the job
   },
+  applications: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Application',
+        }
+    ]
   
   
 }, { timestamps: true });

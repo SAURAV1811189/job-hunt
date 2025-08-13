@@ -1,5 +1,8 @@
 import Company from "../models/company.model.js";
 import User from "../models/user.model.js";
+import getDataUri from "../utils/datauri.js";
+
+import cloudinary from "../utils/cloudinary.js";
 export const registerCompany = async (req, res) => {
   try {
     const { companyName} = req.body;
@@ -20,12 +23,13 @@ export const registerCompany = async (req, res) => {
     }
     company=await Company.create({
       name:companyName,
-      UserId:req.id
+      userId:req.id
     })
 
    return res.status(201).json({
       message: "Company registered successfully",
       success: true,
+      company, // <-- Now frontend will get _id
     });
   } catch (error) {
     console.error("Error during company registration:", error);
@@ -85,14 +89,23 @@ export const getCompanyById = async (req, res) => {
 export const updateCompany = async (req, res) => {
     try {
          const {name, description, location, website} = req.body;
+         
          const file = req.file; // Assuming you are using multer for file uploads
-         //udhar cloudary ayega
+         //idhar cloudary ayega
+
+         const fileUri = getDataUri(file);
+         const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+         const logo=cloudResponse.secure_url;
+
+         
+         console.log(req.file);
 
          const updatedData = {
             name,
             description,
             location,
             website,
+            logo
          };
 
          const company=await Company.findByIdAndUpdate(req.params.id, updatedData, { new: true });

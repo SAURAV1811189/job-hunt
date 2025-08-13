@@ -1,14 +1,17 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 
+import jwt from "jsonwebtoken";
+import getDataUri from "../utils/datauri.js";
+
+import cloudinary from "../utils/cloudinary.js";
 
 
 export const register = async (req, res) => {
   try {
-    const { fullname, email, password, phoneNumber, role } = req.body;
+    const { fullname, email, password, phoneNumber, role  } = req.body;
     // console.log(fullname, email, password, phoneNumber, role);
-    
+   
     // Check if all required fields are filled or not
     if (!fullname || !email || !password || !phoneNumber || !role) {
       return res.status(400).json({
@@ -16,6 +19,13 @@ export const register = async (req, res) => {
         success: false,
       });
     }
+       
+    //cloudinary
+    const file = req.file;
+    const fileUri = getDataUri(file);
+    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    
+
     // Check if the user already exists
     const user = await User.findOne({ email });
     if (user) {
@@ -34,6 +44,9 @@ export const register = async (req, res) => {
       password: hashedPassword,
       phoneNumber,
       role,
+      profile: {
+        profilePhoto: cloudResponse.secure_url,
+      }
     });
     res.status(201).json({
       message: "User registered successfully",
@@ -49,8 +62,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password, role } = req.body;
-    console.log(email, password, role);
-
+    
     // Check if all required fields are filled or not
     if (!email || !password || !role) {
       return res.status(400).json({
@@ -140,50 +152,40 @@ export const logout = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, bio, skills } = req.body;
-   const file = req.file; // Assuming you are using multer for file uploads
-    // If you want to handle file uploads, you can process the file here
+    const file = req.file;
+    console.log("file", req.file);
+    console.log(fullname, email, phoneNumber, bio, skills);
 
-  
-    
+    let cloudResponse = null;
+    if (file) {
+      const fileUri = getDataUri(file);
+      cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    }
 
-    //cloudnary upload code comes here later for the file
-if(skills){
- const skillsArray = skills.split(",");
-}
-   
-    const userId = req.id; //middleware authentication id se ayega
+    let skillsArray;
+    if (skills) {
+      skillsArray = skills.split(",");
+    }
 
-    // Update the user profile
+    const userId = req.id;
     let user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-        success: false,
-      });
+      return res.status(404).json({ message: "User not found", success: false });
     }
-    //update user profile
+
     user.fullname = fullname;
     user.email = email;
     user.phoneNumber = phoneNumber;
     user.profile.skills = skillsArray;
-    user.profile.bio = bio; // Assuming profile is an object with a bio field
+    user.profile.bio = bio;
 
-    // Save the updated user
+    if (cloudResponse) {
+      user.profile.resume = cloudResponse.secure_url;
+      user.profile.resumeOriginalName = file. originalname;
+    }
 
-    //resume comes here later.....
+    await user.save();
 
-    await user.save(); 
-    
-    //create user object to send in response
-    user = {
-      _id: user._id,
-      fullname: user.fullname,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      role: user.role,
-      profile: user.profile, // Assuming profile is an object with skills and bio
-    };
-    
     res.status(200).json({
       message: "Profile updated successfully",
       user,
@@ -195,3 +197,4 @@ if(skills){
     res.status(500).json({ message: "Internal server error" });
   }
 };
+

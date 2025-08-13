@@ -11,6 +11,7 @@ import axios from "axios";
 import { USER_API_END_POINT } from "../../utils/constant";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "@/redux/authSlice";
+import { Loader2 } from "lucide-react";
 
 
 const Signup = () => {
@@ -44,6 +45,7 @@ const Signup = () => {
        
         formData.append("file", input.file);
     }
+    console.log(input);
     try {
       dispatch(setLoading(true));
         const res= await axios.post(`${USER_API_END_POINT}/register`, formData , {
@@ -122,7 +124,7 @@ const Signup = () => {
             </div>
           </div>
           {
-            loading ? <Button className="w-full my-4"> <Loader2  className="mr-2 h-4 animate-spin" / >
+            loading ? <Button className="w-full my-4"> <Loader2 className="mr-2 h-4 animate-spin" / >
         please wait
             </Button> :  <Button type="submit" className="w-full my-4">Sign Up</Button>
           }

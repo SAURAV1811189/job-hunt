@@ -6,9 +6,10 @@ const applicationSchema = new mongoose.Schema({
     required: true,
   },
   applicant:{
-    type: String, // Name of the applicant
-    required: true,
-  },
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User',
+        required:true
+    },
   status: {
     type: String,
     enum: ["pending", "accepted", "rejected"],

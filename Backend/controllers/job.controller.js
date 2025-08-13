@@ -99,9 +99,12 @@ export const getAllJobs = async (req, res) => {
 export const getJobById = async (req, res) => {
   try {
     const jobId = req.params.id; // Get job ID from request parameters
-    const job = await Job.findById(jobId)
-      .populate("company", "name location") // Populate company details
-      .populate("created_By", "name email"); // Populate user details
+    const job = await Job.findById(jobId).populate({
+      path: "applications"
+      
+    });
+      // .populate("company", "name location") // Populate company details
+      // .populate("created_By", "name email"); // Populate user details
 
     if (!job) {
       return res.status(404).json({
