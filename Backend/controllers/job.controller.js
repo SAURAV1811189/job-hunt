@@ -1,6 +1,5 @@
 import Job from "../models/job.model.js";
 
-
 // Post a new job by admin
 export const postJob = async (req, res) => {
   try {
@@ -39,7 +38,7 @@ export const postJob = async (req, res) => {
       description,
       requirements, // Split requirements by comma and trim whitespace
       location,
-      salary,// Ensure salary is a number
+      salary, // Ensure salary is a number
       jobType,
       experienceLevel: experience, // Assuming experience is a string like "fresher", "1-2 years", etc.
       position,
@@ -52,46 +51,40 @@ export const postJob = async (req, res) => {
     return res.status(201).json({
       message: "Job posted or created  successfully",
       success: true,
-      job
+      job,
     });
   } catch (error) {
     console.error("Error posting job:", error);
   }
 };
 
-
-
 //get all jobs  student side
 export const getAllJobs = async (req, res) => {
   try {
     const Keyword = req.query.keyword || "";
-    const query={
-        $or: [
-            { title: { $regex: Keyword, $options: "i" } }, // Case-insensitive search in title
-            { description: { $regex: Keyword, $options: "i" } }, // Case-insensitive search in description
-        ]
-
+    const query = {
+      $or: [
+        { title: { $regex: Keyword, $options: "i" } }, // Case-insensitive search in title
+        { description: { $regex: Keyword, $options: "i" } }, // Case-insensitive search in description
+      ],
     };
     const jobs = await Job.find(query)
-      .populate("company", "name location") // Populate company details
+      .populate("company", "name location logo") // Populate company details
       .populate("created_By", "name email") // Populate user details
       .sort({ createdAt: -1 }); // Sort by creation date, most recent first
-     if(!jobs){
-        return res.status(404).json({
-            message: "No jobs found",
-            success: false,
-        });
+    if (!jobs) {
+      return res.status(404).json({
+        message: "No jobs found",
+        success: false,
+      });
     }
-     return res.status(200).json({
+    return res.status(200).json({
       message: "Jobs fetched successfully",
       success: true,
       jobs,
     });
-
   } catch (error) {
-
     console.error("Error fetching jobs:", error);
-    
   }
 };
 
@@ -100,11 +93,10 @@ export const getJobById = async (req, res) => {
   try {
     const jobId = req.params.id; // Get job ID from request parameters
     const job = await Job.findById(jobId).populate({
-      path: "applications"
-      
+      path: "applications",
     });
-      // .populate("company", "name location") // Populate company details
-      // .populate("created_By", "name email"); // Populate user details
+    // .populate("company", "name location") // Populate company details
+    // .populate("created_By", "name email"); // Populate user details
 
     if (!job) {
       return res.status(404).json({
@@ -127,12 +119,12 @@ export const getJobById = async (req, res) => {
 export const getAdminPostedJobs = async (req, res) => {
   try {
     const adminId = req.id; // Get the logged-in user's ID from the request
-    const jobs = await Job.find({ created_By : adminId })
+    const jobs = await Job.find({ created_By: adminId })
       .populate("company", "name location") // Populate company details
       .populate("created_By", "name email") // Populate user details
       .sort({ createdAt: -1 }); // Sort by creation date, most recent first
 
-    if (!jobs ) {
+    if (!jobs) {
       return res.status(404).json({
         message: "No jobs found for this user",
         success: false,
@@ -144,8 +136,6 @@ export const getAdminPostedJobs = async (req, res) => {
       success: true,
       jobs,
     });
-
-
   } catch (error) {
     console.error("Error fetching admin posted jobs:", error);
   }

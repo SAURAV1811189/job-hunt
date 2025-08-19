@@ -9,9 +9,11 @@ import { COMPANY_API_END_POINT } from '@/utils/constant';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
+import useGetCompanyById from '@/hooks/useGetCompanyById';
 
 const CompanySetup = () => {
-
+   const parems=useParams();
+    useGetCompanyById(parems.id);
   const [input, setinput] = useState({
     name: "",
     description: "",
@@ -22,7 +24,7 @@ const CompanySetup = () => {
   const {singleCompany}=useSelector((store) => store.company);
 
   const [loading, setloading] = useState(false);
-  const parems=useParams();
+ 
 const navigate=useNavigate();
   const eventHandler = (e) => {
     setinput({ ...input, [e.target.name]: e.target.value });
